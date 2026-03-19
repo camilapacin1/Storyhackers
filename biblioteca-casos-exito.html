@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblioteca de Casos de Éxito</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --border: #e8eaed;
+      --text-primary: #1a1a2e;
+      --text-secondary: #6b7280;
+      --accent: #4f46e5;
+      --accent-light: #eef2ff;
+      --accent-hover: #4338ca;
+      --favorite: #f59e0b;
+      --radius: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+      --transition: 0.2s ease;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+
+    .header h1 span { color: var(--accent); }
+
+    .header-stats {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .stat { text-align: center; }
+    .stat-number { font-size: 20px; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── Filters ── */
+    .filters-section {
+      max-width: 1400px;
+      margin: 24px auto 0;
+      padding: 0 40px;
+    }
+
+    .filters-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .filter-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--bg);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+      font-family: inherit;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .filter-group input::placeholder { color: #b0b5bd; }
+
+    .filter-actions {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg);
+      color: var(--text-primary);
+    }
+
+    .btn-fav-filter {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-fav-filter.active {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fbbf24;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      max-width: 1400px;
+      margin: 20px auto 0;
+      padding: 0 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .results-count { font-size: 14px; color: var(--text-secondary); }
+    .results-count strong { color: var(--text-primary); }
+
+    /* ── Card Grid ── */
+    .grid-container {
+      max-width: 1400px;
+      margin: 20px auto 40px;
+      padding: 0 40px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+      border-color: #d1d5db;
+    }
+
+    /* ── Slide thumbnail (portada) ── */
+    .card-slide {
+      aspect-ratio: 16 / 10;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide-bg {
+      position: absolute;
+      inset: 0;
+    }
+
+    .slide-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    .slide-top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .slide-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+      opacity: 0.6;
+    }
+
+    .slide-client-name {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+
+    .slide-subtitle {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.5;
+      letter-spacing: 0.3px;
+    }
+
+    .slide-decoration {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.08;
+    }
+
+    .slide-decoration-1 {
+      width: 120px;
+      height: 120px;
+      bottom: -30px;
+      right: -30px;
+    }
+
+    .slide-decoration-2 {
+      width: 60px;
+      height: 60px;
+      top: 20px;
+      left: -15px;
+    }
+
+    /* ── Favorite button on card ── */
+    .card-fav-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+      font-size: 18px;
+      color: #ccc;
+    }
+
+    .card-fav-btn:hover {
+      background: white;
+      transform: scale(1.15);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-fav-btn.favorited {
+      background: #fef3c7;
+      color: var(--favorite);
+    }
+
+    /* ── Card body ── */
+    .card-body {
+      padding: 18px 20px 16px;
+    }
+
+    .card-client-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      letter-spacing: -0.2px;
+    }
+
+    .card-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .tag-industria {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .tag-pais {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .card-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafbfc;
+    }
+
+    .card-date {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .card-preview-hint {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 16px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+    }
+
+    .modal-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      border-radius: 16px 16px 0 0;
+      z-index: 1;
+    }
+
+    .modal-title { font-size: 20px; font-weight: 700; }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--text-secondary);
+      transition: all var(--transition);
+    }
+
+    .modal-close:hover { background: var(--bg); color: var(--text-primary); }
+
+    .modal-body { padding: 28px; }
+
+    .preview-slide {
+      aspect-ratio: 16 / 10;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+      padding: 40px;
+    }
+
+    .preview-slide-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .preview-slide-client {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .preview-slide-subtitle {
+      font-size: 16px;
+      opacity: 0.5;
+    }
+
+    .preview-slide .slide-decoration {
+      opacity: 0.06;
+    }
+
+    .preview-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .preview-meta-card {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .preview-meta-card label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .preview-meta-card p {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 4px;
+    }
+
+    .preview-section { margin-bottom: 24px; }
+
+    .preview-section h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .preview-section p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-primary);
+    }
+
+    .preview-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .preview-result-item {
+      background: var(--accent-light);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .preview-result-value { font-size: 24px; font-weight: 800; color: var(--accent); }
+    .preview-result-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+    .modal-footer {
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      position: sticky;
+      bottom: 0;
+      background: var(--surface);
+      border-radius: 0 0 16px 16px;
+    }
+
+    .btn-download {
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-download:hover { background: var(--accent-hover); }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+    .empty-state h3 { font-size: 18px; color: var(--text-primary); margin-bottom: 8px; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--text-primary);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .header { padding: 16px 20px; }
+      .filters-section, .toolbar, .grid-container { padding: 0 20px; }
+      .filters-bar { flex-direction: column; }
+      .filter-group { min-width: 100%; }
+      .card-grid { grid-template-columns: 1fr; }
+      .modal-overlay { padding: 16px; }
+      .header-stats { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <h1>Casos de <span>Éxito</span></h1>
+      <div class="header-stats">
+        <div class="stat">
+          <div class="stat-number" id="totalCases">0</div>
+          <div class="stat-label">Total Casos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" id="totalCountries">0</div>
+          <div class="stat-label">Países</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" id="totalIndustries">0</div>
+          <div class="stat-label">Industrias</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <section class="filters-section">
+    <div class="filters-bar">
+      <div class="filter-group" style="flex: 1.5;">
+        <label>Buscar cliente</label>
+        <input type="text" id="filterName" placeholder="Nombre del cliente...">
+      </div>
+      <div class="filter-group">
+        <label>Industria</label>
+        <select id="filterIndustry">
+          <option value="">Todas las industrias</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>País</label>
+        <select id="filterCountry">
+          <option value="">Todos los países</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Año creación comunidad</label>
+        <select id="filterYear">
+          <option value="">Todos los años</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-ghost btn-fav-filter" id="filterFavorites" onclick="toggleFavFilter()">
+          <span>&#9733;</span> Favoritos
+        </button>
+        <button class="btn btn-ghost" onclick="clearFilters()">Limpiar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="results-count" id="resultsCount"></div>
+  </div>
+
+  <!-- Card Grid -->
+  <main class="grid-container">
+    <div class="card-grid" id="cardGrid"></div>
+  </main>
+
+  <!-- Preview Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle"></div>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal()">Cerrar</button>
+        <button class="btn btn-download" id="modalDownload">
+          <span>&#8595;</span> Descargar presentación
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── Slide theme palettes: [bg, accent, text] ──
+    const slideThemes = [
+      { bg: '#1a1a2e', accent: '#4f46e5', text: '#ffffff', accentLight: 'rgba(79,70,229,0.3)' },
+      { bg: '#0f172a', accent: '#38bdf8', text: '#ffffff', accentLight: 'rgba(56,189,248,0.25)' },
+      { bg: '#ffffff', accent: '#4f46e5', text: '#1a1a2e', accentLight: 'rgba(79,70,229,0.1)' },
+      { bg: '#fafaf9', accent: '#059669', text: '#1a1a2e', accentLight: 'rgba(5,150,105,0.1)' },
+      { bg: '#1e293b', accent: '#f59e0b', text: '#ffffff', accentLight: 'rgba(245,158,11,0.25)' },
+      { bg: '#18181b', accent: '#a78bfa', text: '#ffffff', accentLight: 'rgba(167,139,250,0.25)' },
+      { bg: '#f0fdf4', accent: '#16a34a', text: '#14532d', accentLight: 'rgba(22,163,74,0.15)' },
+      { bg: '#fff7ed', accent: '#ea580c', text: '#7c2d12', accentLight: 'rgba(234,88,12,0.15)' },
+      { bg: '#0c4a6e', accent: '#22d3ee', text: '#ffffff', accentLight: 'rgba(34,211,238,0.2)' },
+      { bg: '#312e81', accent: '#818cf8', text: '#ffffff', accentLight: 'rgba(129,140,248,0.25)' },
+      { bg: '#fef2f2', accent: '#dc2626', text: '#7f1d1d', accentLight: 'rgba(220,38,38,0.12)' },
+      { bg: '#1a1a2e', accent: '#10b981', text: '#ffffff', accentLight: 'rgba(16,185,129,0.25)' },
+    ];
+
+    // ── Sample Data ──
+    const casosDeExito = [
+      {
+        id: 1,
+        cliente: "Mercado Libre",
+        industria: "E-commerce",
+        pais: "Argentina",
+        fechaCreacionComunidad: "2025-03-15",
+        descripcion: "Implementación de plataforma de analytics para optimizar la conversión en el checkout y mejorar la experiencia del usuario final.",
+        resultados: [
+          { valor: "+34%", label: "Conversión" },
+          { valor: "-22%", label: "Churn rate" },
+          { valor: "+18%", label: "NPS" }
+        ],
+        detalle: "Mercado Libre buscaba mejorar sus métricas de conversión en el proceso de checkout. Mediante la implementación de nuestra plataforma de analytics avanzado, lograron identificar puntos de fricción clave y optimizar la experiencia del usuario. El proyecto se completó en 4 meses con resultados significativos.",
+        archivo: "mercadolibre_caso_exito.pdf"
+      },
+      {
+        id: 2,
+        cliente: "Globant",
+        industria: "Tecnología",
+        pais: "Argentina",
+        fechaCreacionComunidad: "2025-01-10",
+        descripcion: "Transformación digital del proceso de onboarding de clientes enterprise, reduciendo el tiempo de implementación un 40%.",
+        resultados: [
+          { valor: "-40%", label: "Tiempo impl." },
+          { valor: "+95%", label: "Satisfacción" },
+          { valor: "3x", label: "Escalabilidad" }
+        ],
+        detalle: "Globant necesitaba acelerar su proceso de onboarding para clientes enterprise. Desarrollamos un flujo automatizado que redujo drásticamente los tiempos de implementación manteniendo la calidad del servicio.",
+        archivo: "globant_caso_exito.pdf"
+      },
+      {
+        id: 3,
+        cliente: "Rappi",
+        industria: "Delivery",
+        pais: "Colombia",
+        fechaCreacionComunidad: "2025-06-20",
+        descripcion: "Diseño e implementación de dashboard de métricas en tiempo real para el equipo de operaciones y customer success.",
+        resultados: [
+          { valor: "+50%", label: "Eficiencia ops" },
+          { valor: "-60%", label: "Tiempo resp." },
+          { valor: "+28%", label: "Retención" }
+        ],
+        detalle: "Rappi requería visibilidad en tiempo real de sus métricas operativas. Implementamos un dashboard integral que permite al equipo de operaciones y CS tomar decisiones basadas en datos.",
+        archivo: "rappi_caso_exito.pdf"
+      },
+      {
+        id: 4,
+        cliente: "LATAM Airlines",
+        industria: "Aviación",
+        pais: "Chile",
+        fechaCreacionComunidad: "2024-11-10",
+        descripcion: "Estrategia de fidelización digital que incrementó el engagement del programa de lealtad en un 45%.",
+        resultados: [
+          { valor: "+45%", label: "Engagement" },
+          { valor: "+32%", label: "Revenue" },
+          { valor: "2M+", label: "Usuarios activos" }
+        ],
+        detalle: "LATAM Airlines necesitaba revitalizar su programa de lealtad. Diseñamos una estrategia digital integral que incluyó personalización de ofertas, gamificación y comunicación omnicanal.",
+        archivo: "latam_caso_exito.pdf"
+      },
+      {
+        id: 5,
+        cliente: "Nubank",
+        industria: "Fintech",
+        pais: "Brasil",
+        fechaCreacionComunidad: "2025-02-05",
+        descripcion: "Automatización del flujo de atención al cliente con IA conversacional, procesando 80% de consultas sin intervención humana.",
+        resultados: [
+          { valor: "80%", label: "Autogestión" },
+          { valor: "-65%", label: "Costo/ticket" },
+          { valor: "4.8/5", label: "CSAT" }
+        ],
+        detalle: "Nubank buscaba escalar su atención al cliente sin comprometer la calidad. Implementamos un sistema de IA conversacional que automatiza la resolución de consultas frecuentes.",
+        archivo: "nubank_caso_exito.pdf"
+      },
+      {
+        id: 6,
+        cliente: "Falabella",
+        industria: "Retail",
+        pais: "Chile",
+        fechaCreacionComunidad: "2025-09-01",
+        descripcion: "Unificación de la experiencia omnicanal integrando tiendas físicas con el ecosistema digital.",
+        resultados: [
+          { valor: "+38%", label: "Venta cruzada" },
+          { valor: "+55%", label: "CLV" },
+          { valor: "92%", label: "NPS omnicanal" }
+        ],
+        detalle: "Falabella necesitaba unificar la experiencia entre sus canales físicos y digitales. Desarrollamos una estrategia omnicanal integral que permite a los clientes transitar seamlessly entre tiendas, app y web.",
+        archivo: "falabella_caso_exito.pdf"
+      },
+      {
+        id: 7,
+        cliente: "Cemex",
+        industria: "Construcción",
+        pais: "México",
+        fechaCreacionComunidad: "2025-04-20",
+        descripcion: "Digitalización del proceso de ventas B2B con un portal self-service que redujo los tiempos de cotización en un 70%.",
+        resultados: [
+          { valor: "-70%", label: "Tiempo cotización" },
+          { valor: "+25%", label: "Ventas online" },
+          { valor: "+40%", label: "Satisfacción B2B" }
+        ],
+        detalle: "Cemex buscaba modernizar su proceso de ventas B2B. Creamos un portal self-service que permite a los clientes empresariales generar cotizaciones, hacer pedidos y dar seguimiento en tiempo real.",
+        archivo: "cemex_caso_exito.pdf"
+      },
+      {
+        id: 8,
+        cliente: "Banco Galicia",
+        industria: "Banca",
+        pais: "Argentina",
+        fechaCreacionComunidad: "2024-05-15",
+        descripcion: "Redesign de la app mobile banking con enfoque en accesibilidad y usabilidad, duplicando la adopción digital.",
+        resultados: [
+          { valor: "2x", label: "Adopción digital" },
+          { valor: "+60%", label: "Transacciones" },
+          { valor: "4.7/5", label: "App Store" }
+        ],
+        detalle: "Banco Galicia necesitaba modernizar su aplicación móvil para competir en el mercado fintech. Realizamos un redesign completo enfocado en accesibilidad y usabilidad.",
+        archivo: "banco_galicia_caso_exito.pdf"
+      },
+      {
+        id: 9,
+        cliente: "iFood",
+        industria: "Delivery",
+        pais: "Brasil",
+        fechaCreacionComunidad: "2025-07-10",
+        descripcion: "Implementación de modelo predictivo para anticipar demanda y optimizar asignación de repartidores en tiempo real.",
+        resultados: [
+          { valor: "-30%", label: "Tiempo entrega" },
+          { valor: "+20%", label: "Órdenes/hora" },
+          { valor: "-15%", label: "Costos logísticos" }
+        ],
+        detalle: "iFood buscaba optimizar su red de entregas. Implementamos un modelo predictivo de demanda que permite anticipar picos y asignar repartidores de forma inteligente.",
+        archivo: "ifood_caso_exito.pdf"
+      },
+      {
+        id: 10,
+        cliente: "Despegar",
+        industria: "Turismo",
+        pais: "Argentina",
+        fechaCreacionComunidad: "2025-05-01",
+        descripcion: "Motor de recomendaciones personalizado que incrementó las reservas cross-sell un 35% mediante análisis de comportamiento.",
+        resultados: [
+          { valor: "+35%", label: "Cross-sell" },
+          { valor: "+22%", label: "Ticket promedio" },
+          { valor: "+48%", label: "Engagement" }
+        ],
+        detalle: "Despegar necesitaba mejorar su estrategia de cross-sell. Desarrollamos un motor de recomendaciones basado en análisis de comportamiento del usuario.",
+        archivo: "despegar_caso_exito.pdf"
+      },
+      {
+        id: 11,
+        cliente: "Natura",
+        industria: "Belleza",
+        pais: "Brasil",
+        fechaCreacionComunidad: "2025-08-15",
+        descripcion: "Plataforma de social selling para consultoras con herramientas de gestión de clientes y analytics de ventas.",
+        resultados: [
+          { valor: "+42%", label: "Ventas digitales" },
+          { valor: "500K+", label: "Consultoras activas" },
+          { valor: "+30%", label: "Recurrencia" }
+        ],
+        detalle: "Natura buscaba potenciar su red de consultoras con herramientas digitales. Creamos una plataforma integral de social selling.",
+        archivo: "natura_caso_exito.pdf"
+      },
+      {
+        id: 12,
+        cliente: "Grupo Bimbo",
+        industria: "Alimentos",
+        pais: "México",
+        fechaCreacionComunidad: "2024-12-01",
+        descripcion: "Optimización de la cadena de distribución con IoT y analytics, reduciendo el desperdicio un 25%.",
+        resultados: [
+          { valor: "-25%", label: "Desperdicio" },
+          { valor: "+15%", label: "Frescura" },
+          { valor: "-18%", label: "Costos dist." }
+        ],
+        detalle: "Grupo Bimbo necesitaba optimizar su cadena de distribución para reducir desperdicio. Implementamos sensores IoT y un sistema de analytics predictivo.",
+        archivo: "grupobimbo_caso_exito.pdf"
+      }
+    ];
+
+    // ── State ──
+    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    let showOnlyFavorites = false;
+
+    // ── Init ──
+    function init() {
+      populateFilters();
+      // Set defaults: all industries (value=""), Argentina, 2025
+      document.getElementById('filterIndustry').value = '';
+      document.getElementById('filterCountry').value = 'Argentina';
+      document.getElementById('filterYear').value = '2025';
+      applyFilters();
+      updateStats();
+      setupFilterListeners();
+    }
+
+    function populateFilters() {
+      const industries = [...new Set(casosDeExito.map(c => c.industria))].sort();
+      const countries = [...new Set(casosDeExito.map(c => c.pais))].sort();
+      const years = [...new Set(casosDeExito.map(c => c.fechaCreacionComunidad.substring(0, 4)))].sort().reverse();
+
+      const indSelect = document.getElementById('filterIndustry');
+      industries.forEach(i => {
+        indSelect.innerHTML += `<option value="${i}">${i}</option>`;
+      });
+
+      const countrySelect = document.getElementById('filterCountry');
+      countries.forEach(c => {
+        countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
+      });
+
+      const yearSelect = document.getElementById('filterYear');
+      years.forEach(y => {
+        yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+      });
+    }
+
+    function setupFilterListeners() {
+      ['filterName', 'filterIndustry', 'filterCountry', 'filterYear'].forEach(id => {
+        document.getElementById(id).addEventListener('input', applyFilters);
+        document.getElementById(id).addEventListener('change', applyFilters);
+      });
+    }
+
+    function applyFilters() {
+      const name = document.getElementById('filterName').value.toLowerCase();
+      const industry = document.getElementById('filterIndustry').value;
+      const country = document.getElementById('filterCountry').value;
+      const year = document.getElementById('filterYear').value;
+
+      let filtered = casosDeExito.filter(c => {
+        if (name && !c.cliente.toLowerCase().includes(name)) return false;
+        if (industry && c.industria !== industry) return false;
+        if (country && c.pais !== country) return false;
+        if (year && !c.fechaCreacionComunidad.startsWith(year)) return false;
+        if (showOnlyFavorites && !favorites.includes(c.id)) return false;
+        return true;
+      });
+
+      renderCards(filtered);
+    }
+
+    function clearFilters() {
+      document.getElementById('filterName').value = '';
+      document.getElementById('filterIndustry').value = '';
+      document.getElementById('filterCountry').value = '';
+      document.getElementById('filterYear').value = '';
+      showOnlyFavorites = false;
+      document.getElementById('filterFavorites').classList.remove('active');
+      applyFilters();
+    }
+
+    function toggleFavFilter() {
+      showOnlyFavorites = !showOnlyFavorites;
+      document.getElementById('filterFavorites').classList.toggle('active', showOnlyFavorites);
+      applyFilters();
+    }
+
+    // ── Render Cards ──
+    function renderCards(data) {
+      const grid = document.getElementById('cardGrid');
+      document.getElementById('resultsCount').innerHTML = `Mostrando <strong>${data.length}</strong> de <strong>${casosDeExito.length}</strong> casos`;
+
+      if (data.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-state-icon">&#128269;</div>
+            <h3>No se encontraron resultados</h3>
+            <p>Intentá ajustar los filtros para encontrar lo que buscás</p>
+          </div>`;
+        return;
+      }
+
+      grid.innerHTML = data.map((caso) => {
+        const theme = slideThemes[caso.id % slideThemes.length];
+        const isFav = favorites.includes(caso.id);
+        const dateFormatted = new Date(caso.fechaCreacionComunidad + 'T00:00:00').toLocaleDateString('es-AR', { year: 'numeric', month: 'short' });
+
+        return `
+          <div class="card" onclick="openPreview(${caso.id})">
+            <div class="card-slide">
+              <div class="slide-bg" style="background: ${theme.bg}"></div>
+              <div class="slide-content" style="color: ${theme.text}">
+                <div class="slide-top-bar" style="background: ${theme.accent}"></div>
+                <div class="slide-label" style="color: ${theme.accent}">CASO DE ÉXITO</div>
+                <div class="slide-client-name">${caso.cliente}</div>
+                <div class="slide-subtitle">${caso.industria} &mdash; ${caso.pais}</div>
+                <div class="slide-decoration slide-decoration-1" style="background: ${theme.accent}"></div>
+                <div class="slide-decoration slide-decoration-2" style="background: ${theme.accent}"></div>
+              </div>
+              <button class="card-fav-btn ${isFav ? 'favorited' : ''}" onclick="toggleFavorite(event, ${caso.id})" title="${isFav ? 'Quitar de favoritos' : 'Guardar en favoritos'}">
+                ${isFav ? '&#9733;' : '&#9734;'}
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="card-client-title">${caso.cliente}</div>
+              <div class="card-tags">
+                <span class="tag tag-industria">${caso.industria}</span>
+                <span class="tag tag-pais">${caso.pais}</span>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="card-date">&#128197; ${dateFormatted}</div>
+              <div class="card-preview-hint">Ver caso &#8594;</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function updateStats() {
+      document.getElementById('totalCases').textContent = casosDeExito.length;
+      document.getElementById('totalCountries').textContent = new Set(casosDeExito.map(c => c.pais)).size;
+      document.getElementById('totalIndustries').textContent = new Set(casosDeExito.map(c => c.industria)).size;
+    }
+
+    // ── Favorites ──
+    function toggleFavorite(e, id) {
+      e.stopPropagation();
+      if (favorites.includes(id)) {
+        favorites = favorites.filter(f => f !== id);
+        showToast('Eliminado de favoritos');
+      } else {
+        favorites.push(id);
+        showToast('&#9733; Guardado en favoritos');
+      }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      applyFilters();
+    }
+
+    // ── Preview Modal ──
+    function openPreview(id) {
+      const caso = casosDeExito.find(c => c.id === id);
+      const theme = slideThemes[caso.id % slideThemes.length];
+      const dateFormatted = new Date(caso.fechaCreacionComunidad + 'T00:00:00').toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      document.getElementById('modalTitle').textContent = caso.cliente + ' — Caso de Éxito';
+      document.getElementById('modalDownload').onclick = () => {
+        showToast('&#8595; Descargando ' + caso.archivo);
+      };
+
+      document.getElementById('modalBody').innerHTML = `
+        <div class="preview-slide" style="background: ${theme.bg}; color: ${theme.text}">
+          <div class="slide-top-bar" style="background: ${theme.accent}; position: absolute; top: 0; left: 0; right: 0; height: 5px;"></div>
+          <div class="preview-slide-label" style="color: ${theme.accent}">CASO DE ÉXITO</div>
+          <div class="preview-slide-client">${caso.cliente}</div>
+          <div class="preview-slide-subtitle">${caso.industria} &mdash; ${caso.pais}</div>
+          <div class="slide-decoration slide-decoration-1" style="background: ${theme.accent}; position: absolute; width: 180px; height: 180px; bottom: -50px; right: -50px; border-radius: 50%;"></div>
+          <div class="slide-decoration slide-decoration-2" style="background: ${theme.accent}; position: absolute; width: 80px; height: 80px; top: 30px; left: -20px; border-radius: 50%;"></div>
+        </div>
+        <div class="preview-meta-grid">
+          <div class="preview-meta-card">
+            <label>Cliente</label>
+            <p>${caso.cliente}</p>
+          </div>
+          <div class="preview-meta-card">
+            <label>Industria</label>
+            <p>${caso.industria}</p>
+          </div>
+          <div class="preview-meta-card">
+            <label>País</label>
+            <p>${caso.pais}</p>
+          </div>
+          <div class="preview-meta-card">
+            <label>Creación comunidad</label>
+            <p>${dateFormatted}</p>
+          </div>
+        </div>
+        <div class="preview-section">
+          <h3>Resumen del caso</h3>
+          <p>${caso.detalle}</p>
+        </div>
+        <div class="preview-section">
+          <h3>Resultados clave</h3>
+          <div class="preview-results">
+            ${caso.resultados.map(r => `
+              <div class="preview-result-item">
+                <div class="preview-result-value">${r.valor}</div>
+                <div class="preview-result-label">${r.label}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('modalOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(e) {
+      if (e && e.target !== document.getElementById('modalOverlay')) return;
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // ── Toast ──
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerHTML = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ── Start ──
+    init();
+  </script>
+</body>
+</html>
